@@ -7,12 +7,20 @@ import ApiKeyPanel from "./api-key-panel"
 import TestimonialTabs from "./testimonial-tabs"
 import SignOutButton from "../sign-out-button"
 import CopyButton from "./copy-button"
+import ProjectSettings from "./project-settings"
 
-export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProjectPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ tab?: string }>
+}) {
   const session = await auth()
   if (!session?.user?.id) redirect("/sign-in")
 
   const { slug } = await params
+  const { tab } = await searchParams
 
   const project = await prisma.project.findUnique({
     where: { slug },
@@ -26,66 +34,87 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const rejected = project.testimonials.filter((t) => t.status === "REJECTED")
 
   const collectUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/collect/${slug}`
+  const activeSection = tab ?? "testimonials"
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <header className="border-b px-6 py-3 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-10">
+    <div className="min-h-screen flex flex-col bg-base-100">
+      <header className="border-b border-base-300 px-6 py-3 flex items-center justify-between sticky top-0 bg-base-100/95 backdrop-blur z-10">
         <div className="flex items-center gap-2 text-sm">
-          <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+          <Link href="/dashboard" className="text-base-content/50 hover:text-base-content transition-colors font-medium">
             ✦ Vouch
           </Link>
-          <span className="text-muted-foreground/40">/</span>
+          <span className="text-base-content/20">/</span>
           <span className="font-semibold">{project.name}</span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <span className="text-xs text-muted-foreground hidden sm:block">{session.user.email}</span>
+          <span className="text-xs text-base-content/40 hidden sm:block">{session.user.email}</span>
           <SignOutButton />
         </div>
       </header>
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-8 space-y-8 animate-fade-in">
-
         {/* Page header */}
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-muted-foreground">Collection link</span>
-            <div className="flex items-center gap-1.5 bg-muted rounded-lg px-3 py-1.5">
-              <code className="text-xs font-mono">{collectUrl}</code>
-              <CopyButton text={collectUrl} />
+            <span className="text-sm text-base-content/50">Collection link</span>
+            <div className="flex items-center gap-1.5 bg-base-200 rounded-lg px-3 py-1.5">
+              <code className="text-xs font-mono text-base-content/70">{collectUrl}</code>
+              <CopyButton text={collectUrl} advanceOnboarding />
             </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 animate-slide-up">
-          <div className={`rounded-xl border px-4 py-3 ${pending.length > 0 ? "border-primary/40 bg-primary/5" : ""}`}>
-            <p className="text-2xl font-bold">{pending.length}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Pending review</p>
+        <div className="stats stats-horizontal shadow border border-base-300 w-full animate-slide-up">
+          <div className={`stat ${pending.length > 0 ? "bg-warning/10" : ""}`}>
+            <div className="stat-value text-2xl">{pending.length}</div>
+            <div className="stat-desc">Pending review</div>
           </div>
-          <div className="rounded-xl border px-4 py-3">
-            <p className="text-2xl font-bold">{approved.length}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Approved</p>
+          <div className="stat">
+            <div className="stat-value text-2xl">{approved.length}</div>
+            <div className="stat-desc">Approved</div>
           </div>
-          <div className="rounded-xl border px-4 py-3">
-            <p className="text-2xl font-bold">{rejected.length}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Rejected</p>
+          <div className="stat">
+            <div className="stat-value text-2xl">{rejected.length}</div>
+            <div className="stat-desc">Rejected</div>
           </div>
         </div>
 
-        {/* PRIMARY: Testimonials */}
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Testimonials</h2>
+        {/* Section tabs */}
+        <div role="tablist" className="tabs tabs-bordered">
+          <Link href={`/dashboard/${slug}`} role="tab" className={`tab ${activeSection === "testimonials" ? "tab-active" : ""}`}>
+            Testimonials
+          </Link>
+          <Link href={`/dashboard/${slug}?tab=api`} role="tab" className={`tab ${activeSection === "api" ? "tab-active" : ""}`}>
+            API Access
+          </Link>
+          <Link href={`/dashboard/${slug}?tab=settings`} role="tab" className={`tab ${activeSection === "settings" ? "tab-active" : ""}`}>
+            Settings
+          </Link>
+        </div>
+
+        {activeSection === "testimonials" && (
           <TestimonialTabs pending={pending} approved={approved} rejected={rejected} />
-        </section>
+        )}
 
-        {/* SECONDARY: API */}
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">API Access</h2>
+        {activeSection === "api" && (
           <ApiKeyPanel projectId={project.id} apiKey={project.apiKey} slug={slug} />
-        </section>
+        )}
 
+        {activeSection === "settings" && (
+          <ProjectSettings
+            projectId={project.id}
+            initial={{
+              logoUrl: project.logoUrl,
+              brandColor: project.brandColor,
+              headline: project.headline,
+              description: project.description,
+              customFields: project.customFields as { id: string; label: string; placeholder: string; required: boolean }[] | null,
+            }}
+          />
+        )}
       </main>
     </div>
   )

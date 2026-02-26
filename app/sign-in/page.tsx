@@ -4,10 +4,6 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -35,35 +31,35 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Sign in</CardTitle>
-          <CardDescription>Enter your email and password to continue</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200">
+      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title text-2xl">Sign in</h2>
+          <p className="text-base-content/60 text-sm mb-2">Enter your email and password to continue</p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required autoFocus />
+            <div className="form-control">
+              <label className="label" htmlFor="email"><span className="label-text">Email</span></label>
+              <input id="email" name="email" type="email" required autoFocus className="input input-bordered w-full" />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+            <div className="form-control">
+              <label className="label" htmlFor="password"><span className="label-text">Password</span></label>
+              <input id="password" name="password" type="password" required className="input input-bordered w-full" />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button className="w-full" type="submit" disabled={loading}>
-              {loading ? "Signing in…" : "Sign in"}
-            </Button>
+            {error && (
+              <div className="alert alert-error py-2 text-sm">
+                <span>{error}</span>
+              </div>
+            )}
+            <button className="btn btn-primary w-full" type="submit" disabled={loading}>
+              {loading ? <span className="loading loading-spinner loading-sm" /> : "Sign in"}
+            </button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-2 text-center text-sm text-base-content/60">
             No account?{" "}
-            <Link href="/sign-up" className="underline underline-offset-4 hover:text-foreground">
-              Sign up
-            </Link>
+            <Link href="/sign-up" className="link link-primary">Sign up</Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

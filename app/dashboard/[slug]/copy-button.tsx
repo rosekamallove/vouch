@@ -3,22 +3,26 @@
 import { useState } from "react"
 import { toast } from "sonner"
 
-export default function CopyButton({ text }: { text: string }) {
+export default function CopyButton({ text, advanceOnboarding }: { text: string; advanceOnboarding?: boolean }) {
   const [copied, setCopied] = useState(false)
 
-  function copy() {
+  async function copy() {
     navigator.clipboard.writeText(text)
     setCopied(true)
     toast.success("Copied to clipboard")
     setTimeout(() => setCopied(false), 2000)
+
+    if (advanceOnboarding) {
+      fetch("/api/user/onboarding", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step: 2 }),
+      }).catch(() => {})
+    }
   }
 
   return (
-    <button
-      onClick={copy}
-      className="text-muted-foreground hover:text-foreground transition-colors ml-1"
-      title="Copy link"
-    >
+    <button onClick={copy} className="btn btn-ghost btn-xs" title="Copy link">
       {copied ? (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />

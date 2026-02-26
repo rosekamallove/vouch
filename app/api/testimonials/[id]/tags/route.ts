@@ -7,30 +7,25 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
-  const { status } = await req.json()
+  const { tags } = await req.json()
 
-  if (!["APPROVED", "REJECTED", "PENDING"].includes(status)) {
-    return NextResponse.json({ error: "Invalid status" }, { status: 400 })
+  if (!Array.isArray(tags)) {
+    return NextResponse.json({ error: "tags must be an array" }, { status: 400 })
   }
 
   const testimonial = await prisma.testimonial.findUnique({
     where: { id },
-    include: { project: true },
+    include: { project: { select: { userId: true } } },
   })
 
   if (!testimonial || testimonial.project.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
 
-  const updated = await prisma.testimonial.update({ where: { id }, data: { status } })
-
-  // Advance onboarding step 3 on first approval
-  if (status === "APPROVED") {
-    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { onboardingStep: true } })
-    if (user && user.onboardingStep < 3) {
-      await prisma.user.update({ where: { id: session.user.id }, data: { onboardingStep: 3 } })
-    }
-  }
+  const updated = await prisma.testimonial.update({
+    where: { id },
+    data: { tags },
+  })
 
   return NextResponse.json(updated)
 }

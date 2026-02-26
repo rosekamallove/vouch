@@ -1,14 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
-export default function NewProjectForm() {
+export default function NewProjectForm({ label = "New project" }: { label?: string }) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const dialogRef = useRef<HTMLDialogElement>(null)
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
   const [error, setError] = useState("")
@@ -41,77 +38,58 @@ export default function NewProjectForm() {
     router.push(`/dashboard/${project.slug}`)
   }
 
-  function close() {
-    setOpen(false)
+  function open() {
     setName("")
     setSlug("")
     setError("")
+    dialogRef.current?.showModal()
   }
 
   return (
     <>
-      <Button size="sm" onClick={() => setOpen(true)}>
-        New project
-      </Button>
+      <button className="btn btn-primary btn-sm" onClick={open}>{label}</button>
 
-      {open && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
-            onClick={close}
-          />
-          {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-background rounded-xl border shadow-xl w-full max-w-md p-6 space-y-5">
-              <div>
-                <h2 className="text-base font-semibold">New project</h2>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Each project gets its own collection URL and API key.
-                </p>
-              </div>
+      <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg mb-1">New project</h3>
+          <p className="text-base-content/60 text-sm mb-4">Each project gets its own collection URL and API key.</p>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="proj-name">Project name</Label>
-                  <Input
-                    id="proj-name"
-                    value={name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    placeholder="My App"
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="proj-slug">Slug</Label>
-                  <Input
-                    id="proj-slug"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    placeholder="my-app"
-                    required
-                  />
-                  {slug && (
-                    <p className="text-xs text-muted-foreground font-mono">
-                      /collect/{slug}
-                    </p>
-                  )}
-                </div>
-                {error && <p className="text-sm text-destructive">{error}</p>}
-                <div className="flex gap-2 justify-end pt-1">
-                  <Button type="button" variant="ghost" size="sm" onClick={close}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" size="sm" disabled={loading}>
-                    {loading ? "Creating…" : "Create project"}
-                  </Button>
-                </div>
-              </form>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="form-control">
+              <label className="label" htmlFor="proj-name"><span className="label-text">Project name</span></label>
+              <input
+                id="proj-name"
+                value={name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="My App"
+                required
+                autoFocus
+                className="input input-bordered w-full"
+              />
             </div>
-          </div>
-        </>
-      )}
+            <div className="form-control">
+              <label className="label" htmlFor="proj-slug"><span className="label-text">Slug</span></label>
+              <input
+                id="proj-slug"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="my-app"
+                required
+                className="input input-bordered w-full"
+              />
+              {slug && <label className="label"><span className="label-text-alt font-mono">/collect/{slug}</span></label>}
+            </div>
+            {error && <div className="alert alert-error py-2 text-sm"><span>{error}</span></div>}
+            <div className="modal-action mt-2">
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => dialogRef.current?.close()}>Cancel</button>
+              <button type="submit" className="btn btn-primary btn-sm" disabled={loading}>
+                {loading ? <span className="loading loading-spinner loading-xs" /> : "Create project"}
+              </button>
+            </div>
+          </form>
+        </div>
+        <form method="dialog" className="modal-backdrop"><button>close</button></form>
+      </dialog>
     </>
   )
 }

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 export default function ApiKeyPanel({
@@ -46,40 +45,27 @@ export default function ApiKeyPanel({
   const displayKey = revealed ? apiKey : `${apiKey.slice(0, 8)}${"•".repeat(24)}`
 
   return (
-    <div className="rounded-lg border bg-card divide-y">
-      {/* API key row */}
-      <div className="px-4 py-3 flex items-center gap-2">
-        <code className="flex-1 text-xs font-mono text-muted-foreground truncate">{displayKey}</code>
-        <button
-          onClick={() => setRevealed((r) => !r)}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
-        >
-          {revealed ? "Hide" : "Reveal"}
-        </button>
-        <div className="w-px h-4 bg-border shrink-0" />
-        <Button variant="outline" size="sm" onClick={copyKey} className="shrink-0 h-7 text-xs">
-          Copy key
-        </Button>
-      </div>
-
-      {/* curl example row */}
-      <div className="px-4 py-3 flex items-center justify-between gap-4">
-        <code className="text-xs font-mono text-muted-foreground truncate">
-          GET /api/v1/testimonials/{slug}
-        </code>
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={copyExample}>
-            Copy curl
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/5"
-            onClick={regenerate}
-            disabled={regenerating}
-          >
-            {regenerating ? "Regenerating…" : "Regenerate key"}
-          </Button>
+    <div className="card bg-base-200 border border-base-300">
+      <div className="card-body py-3 px-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <code className="flex-1 text-xs font-mono text-base-content/60 truncate">{displayKey}</code>
+          <button onClick={() => setRevealed((r) => !r)} className="btn btn-ghost btn-xs text-base-content/50">
+            {revealed ? "Hide" : "Reveal"}
+          </button>
+          <div className="w-px h-4 bg-base-300 shrink-0" />
+          <button className="btn btn-outline btn-xs" onClick={copyKey}>Copy key</button>
+        </div>
+        <div className="divider my-0" />
+        <div className="flex items-center justify-between gap-4">
+          <code className="text-xs font-mono text-base-content/50 truncate">
+            GET /api/v1/testimonials/{slug}
+          </code>
+          <div className="flex items-center gap-2 shrink-0">
+            <button className="btn btn-ghost btn-xs" onClick={copyExample}>Copy curl</button>
+            <button className="btn btn-ghost btn-xs text-error hover:text-error" onClick={regenerate} disabled={regenerating}>
+              {regenerating ? <span className="loading loading-spinner loading-xs" /> : "Regenerate key"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

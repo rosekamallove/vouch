@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Geist } from "next/font/google"
 import "./globals.css"
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "sonner"
 import { Providers } from "@/components/providers"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.variable} font-sans antialiased bg-background text-foreground`}>
+      <body className={`${geist.variable} font-sans antialiased`}>
         <Providers>
           {children}
-          <Toaster richColors />
+          <Toaster richColors position="top-right" />
         </Providers>
       </body>
     </html>
