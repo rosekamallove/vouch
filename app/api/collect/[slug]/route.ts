@@ -37,11 +37,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const file = formData.get("photo") as File | null
   const videoFile = formData.get("video") as File | null
 
-  if (!authorName) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 })
-  }
-  if (type === "TEXT" && !text) {
-    return NextResponse.json({ error: "Name and testimonial text required" }, { status: 400 })
+  if (!authorName || !text) {
+    return NextResponse.json({ error: "Name and testimonial text are required" }, { status: 400 })
   }
 
   // Collect custom field values
