@@ -4,6 +4,9 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Loader2 } from "lucide-react"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -31,34 +34,34 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200">
-      <div className="card w-full max-w-sm bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title text-2xl">Sign in</h2>
-          <p className="text-base-content/60 text-sm mb-2">Enter your email and password to continue</p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
-              <label className="label" htmlFor="email"><span className="label-text">Email</span></label>
-              <input id="email" name="email" type="email" required autoFocus className="input input-bordered w-full" />
-            </div>
-            <div className="form-control">
-              <label className="label" htmlFor="password"><span className="label-text">Password</span></label>
-              <input id="password" name="password" type="password" required className="input input-bordered w-full" />
-            </div>
-            {error && (
-              <div className="alert alert-error py-2 text-sm">
-                <span>{error}</span>
-              </div>
-            )}
-            <button className="btn btn-primary w-full" type="submit" disabled={loading}>
-              {loading ? <span className="loading loading-spinner loading-sm" /> : "Sign in"}
-            </button>
-          </form>
-          <p className="mt-2 text-center text-sm text-base-content/60">
-            No account?{" "}
-            <Link href="/sign-up" className="link link-primary">Sign up</Link>
-          </p>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-muted">
+      <div className="w-full max-w-sm bg-background rounded-xl border border-border shadow-sm p-6 space-y-5">
+        <div>
+          <h2 className="text-xl font-semibold">Sign in</h2>
+          <p className="text-muted-foreground text-sm mt-1">Enter your email and password to continue</p>
         </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="email">Email</label>
+            <Input id="email" name="email" type="email" required autoFocus />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="password">Password</label>
+            <Input id="password" name="password" type="password" required />
+          </div>
+          {error && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+          <Button className="w-full bg-foreground text-background hover:bg-foreground/90" type="submit" disabled={loading}>
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
+          </Button>
+        </form>
+        <p className="text-center text-sm text-muted-foreground">
+          No account?{" "}
+          <Link href="/sign-up" className="text-foreground font-medium hover:underline">Sign up</Link>
+        </p>
       </div>
     </div>
   )

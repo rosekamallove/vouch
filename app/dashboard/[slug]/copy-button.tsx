@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { Copy, Check } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default function CopyButton({ text, advanceOnboarding }: { text: string; advanceOnboarding?: boolean }) {
   const [copied, setCopied] = useState(false)
@@ -22,17 +24,8 @@ export default function CopyButton({ text, advanceOnboarding }: { text: string; 
   }
 
   return (
-    <button onClick={copy} className="btn btn-ghost btn-xs" title="Copy link">
-      {copied ? (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      ) : (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-        </svg>
-      )}
-    </button>
+    <Button variant="ghost" size="icon-xs" onClick={copy} title="Copy link">
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+    </Button>
   )
 }

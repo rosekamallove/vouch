@@ -1,11 +1,15 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Loader2 } from "lucide-react"
 
 export default function NewProjectForm({ label = "New project" }: { label?: string }) {
   const router = useRouter()
-  const dialogRef = useRef<HTMLDialogElement>(null)
+  const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
   const [error, setError] = useState("")
@@ -14,6 +18,13 @@ export default function NewProjectForm({ label = "New project" }: { label?: stri
   function handleNameChange(val: string) {
     setName(val)
     setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))
+  }
+
+  function handleOpen() {
+    setName("")
+    setSlug("")
+    setError("")
+    setOpen(true)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -35,61 +46,60 @@ export default function NewProjectForm({ label = "New project" }: { label?: stri
     }
 
     const project = await res.json()
+    setOpen(false)
     router.push(`/dashboard/${project.slug}`)
-  }
-
-  function open() {
-    setName("")
-    setSlug("")
-    setError("")
-    dialogRef.current?.showModal()
   }
 
   return (
     <>
-      <button className="btn btn-primary btn-sm" onClick={open}>{label}</button>
+      <Button size="icon-sm" className="text-background hover:bg-foreground/90" onClick={handleOpen}>
+        {label}
+      </Button>
 
-      <dialog ref={dialogRef} className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg mb-1">New project</h3>
-          <p className="text-base-content/60 text-sm mb-4">Each project gets its own collection URL and API key.</p>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>New project</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground text-sm -mt-2">Each project gets its own collection URL and API key.</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
-              <label className="label" htmlFor="proj-name"><span className="label-text">Project name</span></label>
-              <input
+          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium" htmlFor="proj-name">Project name</label>
+              <Input
                 id="proj-name"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="My App"
                 required
                 autoFocus
-                className="input input-bordered w-full"
               />
             </div>
-            <div className="form-control">
-              <label className="label" htmlFor="proj-slug"><span className="label-text">Slug</span></label>
-              <input
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium" htmlFor="proj-slug">Slug</label>
+              <Input
                 id="proj-slug"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder="my-app"
                 required
-                className="input input-bordered w-full"
               />
-              {slug && <label className="label"><span className="label-text-alt font-mono">/collect/{slug}</span></label>}
+              {slug && <p className="text-xs text-muted-foreground font-mono">/collect/{slug}</p>}
             </div>
-            {error && <div className="alert alert-error py-2 text-sm"><span>{error}</span></div>}
-            <div className="modal-action mt-2">
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => dialogRef.current?.close()}>Cancel</button>
-              <button type="submit" className="btn btn-primary btn-sm" disabled={loading}>
-                {loading ? <span className="loading loading-spinner loading-xs" /> : "Create project"}
-              </button>
+            {error && (
+              <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <div className="flex justify-end gap-2 pt-1">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" size="sm" className="bg-foreground text-background hover:bg-foreground/90" disabled={loading}>
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Create project"}
+              </Button>
             </div>
           </form>
-        </div>
-        <form method="dialog" className="modal-backdrop"><button>close</button></form>
-      </dialog>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

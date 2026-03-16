@@ -2,6 +2,9 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { Eye, EyeOff, Copy, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 
 export default function ApiKeyPanel({
   projectId,
@@ -45,27 +48,44 @@ export default function ApiKeyPanel({
   const displayKey = revealed ? apiKey : `${apiKey.slice(0, 8)}${"•".repeat(24)}`
 
   return (
-    <div className="card bg-base-200 border border-base-300">
-      <div className="card-body py-3 px-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <code className="flex-1 text-xs font-mono text-base-content/60 truncate">{displayKey}</code>
-          <button onClick={() => setRevealed((r) => !r)} className="btn btn-ghost btn-xs text-base-content/50">
-            {revealed ? "Hide" : "Reveal"}
-          </button>
-          <div className="w-px h-4 bg-base-300 shrink-0" />
-          <button className="btn btn-outline btn-xs" onClick={copyKey}>Copy key</button>
-        </div>
-        <div className="divider my-0" />
-        <div className="flex items-center justify-between gap-4">
-          <code className="text-xs font-mono text-base-content/50 truncate">
-            GET /api/v1/testimonials/{slug}
-          </code>
-          <div className="flex items-center gap-2 shrink-0">
-            <button className="btn btn-ghost btn-xs" onClick={copyExample}>Copy curl</button>
-            <button className="btn btn-ghost btn-xs text-error hover:text-error" onClick={regenerate} disabled={regenerating}>
-              {regenerating ? <span className="loading loading-spinner loading-xs" /> : "Regenerate key"}
-            </button>
-          </div>
+    <div className="rounded-xl border border-border p-5 space-y-4">
+      {/* Key row */}
+      <div className="flex items-center gap-3 bg-muted rounded-lg px-3 py-2.5">
+        <code className="flex-1 text-xs font-mono text-muted-foreground truncate">{displayKey}</code>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setRevealed((r) => !r)}
+          className="shrink-0 h-auto py-1 px-2 text-xs text-muted-foreground"
+        >
+          {revealed ? <><EyeOff className="w-3.5 h-3.5 mr-1" /> Hide</> : <><Eye className="w-3.5 h-3.5 mr-1" /> Reveal</>}
+        </Button>
+        <div className="w-px h-4 bg-border shrink-0" />
+        <Button variant="outline" size="sm" onClick={copyKey} className="shrink-0 h-auto py-1 px-2 text-xs gap-1.5">
+          <Copy className="w-3 h-3" /> Copy key
+        </Button>
+      </div>
+
+      <Separator />
+
+      {/* Endpoint row */}
+      <div className="flex items-center justify-between gap-4">
+        <code className="text-xs font-mono text-muted-foreground truncate">
+          GET /api/v1/testimonials/{slug}
+        </code>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button variant="ghost" size="sm" onClick={copyExample} className="text-xs h-auto py-1 px-2">
+            Copy curl
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={regenerate}
+            disabled={regenerating}
+            className="text-xs h-auto py-1 px-2 text-destructive hover:text-destructive hover:bg-destructive/5"
+          >
+            {regenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Regenerate key"}
+          </Button>
         </div>
       </div>
     </div>

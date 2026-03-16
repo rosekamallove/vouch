@@ -1,6 +1,10 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { Star, Camera, CheckCircle2, Video, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 
 type CustomField = { id: string; label: string; placeholder: string; required: boolean }
 
@@ -12,13 +16,16 @@ function StarPicker({ value, onChange, color }: { value: number; onChange: (v: n
         <button
           key={star}
           type="button"
-          className="text-2xl transition-all hover:scale-110 active:scale-95"
-          style={{ color: star <= (hovered || value) ? (color ?? "#f5a623") : "oklch(var(--bc)/0.2)" }}
+          className="transition-all hover:scale-110 active:scale-95"
           onMouseEnter={() => setHovered(star)}
           onMouseLeave={() => setHovered(0)}
           onClick={() => onChange(star === value ? 0 : star)}
         >
-          ★
+          <Star
+            className="w-6 h-6"
+            fill={star <= (hovered || value) ? "currentColor" : "none"}
+            style={{ color: star <= (hovered || value) ? (color ?? "#f5a623") : "oklch(0.92 0.004 286.375)" }}
+          />
         </button>
       ))}
     </div>
@@ -44,7 +51,6 @@ function VideoRecorder({ onVideo, onClear }: { onVideo: (file: File) => void; on
     }
   }, [])
 
-  // Attach stream after the video element mounts
   useEffect(() => {
     if ((state === "ready" || state === "recording") && videoRef.current && streamRef.current) {
       videoRef.current.srcObject = streamRef.current
@@ -112,8 +118,8 @@ function VideoRecorder({ onVideo, onClear }: { onVideo: (file: File) => void; on
   if (state === "done" && previewUrl) {
     return (
       <div className="space-y-2">
-        <video src={previewUrl} controls className="w-full rounded-xl border border-base-300" style={{ maxHeight: "240px" }} />
-        <button type="button" className="btn btn-ghost btn-xs" onClick={reset}>Re-record</button>
+        <video src={previewUrl} controls className="w-full rounded-xl border border-border" style={{ maxHeight: "240px" }} />
+        <Button type="button" variant="ghost" size="sm" onClick={reset} className="text-xs h-7">Re-record</Button>
       </div>
     )
   }
@@ -121,37 +127,35 @@ function VideoRecorder({ onVideo, onClear }: { onVideo: (file: File) => void; on
   return (
     <div className="space-y-3">
       {state !== "idle" && (
-        <div className="relative rounded-xl overflow-hidden bg-base-300 aspect-video">
+        <div className="relative rounded-xl overflow-hidden bg-muted aspect-video">
           <video ref={videoRef} className="w-full h-full object-cover" playsInline muted />
           {state === "recording" && (
-            <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-error/90 rounded-full px-2 py-1">
+            <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-red-600/90 rounded-full px-2 py-1">
               <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
               <span className="text-white text-xs font-mono">{mins}:{secs.toString().padStart(2, "0")}</span>
             </div>
           )}
         </div>
       )}
-      {camError && <p className="text-error text-xs">{camError}</p>}
+      {camError && <p className="text-destructive text-xs">{camError}</p>}
       <div className="flex gap-2 flex-wrap">
         {state === "idle" && (
-          <button type="button" className="btn btn-outline btn-sm gap-2" onClick={startCamera}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="m15 10 4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.89L15 14M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            </svg>
+          <Button type="button" variant="outline" size="sm" className="gap-2" onClick={startCamera}>
+            <Video className="w-4 h-4" />
             Enable camera
-          </button>
+          </Button>
         )}
         {state === "ready" && (
-          <button type="button" className="btn btn-error btn-sm gap-2" onClick={startRecording}>
+          <Button type="button" size="sm" className="bg-red-600 hover:bg-red-700 text-white gap-2" onClick={startRecording}>
             <span className="w-2 h-2 rounded-full bg-white" />
             Start recording
-          </button>
+          </Button>
         )}
         {state === "recording" && (
-          <button type="button" className="btn btn-neutral btn-sm gap-2" onClick={stopRecording}>
-            <span className="w-3 h-3 rounded-sm bg-white" />
+          <Button type="button" variant="outline" size="sm" className="gap-2" onClick={stopRecording}>
+            <span className="w-3 h-3 rounded-sm bg-foreground" />
             Stop ({mins}:{secs.toString().padStart(2, "0")} left)
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -221,25 +225,25 @@ export default function CollectForm({
 
   if (submitted) {
     return (
-      <div className="card bg-base-200 border border-base-300 animate-slide-up">
-        <div className="card-body text-center space-y-4 py-10">
-          <div className="text-6xl animate-bounce">🎉</div>
+      <div className="rounded-2xl bg-card border border-border animate-slide-up">
+        <div className="p-8 text-center space-y-4">
+          <CheckCircle2 className="w-14 h-14 text-yellow-500 mx-auto animate-scale-in" />
           <div className="space-y-1">
             <h2 className="font-bold text-xl">You&apos;re awesome!</h2>
-            <p className="text-base-content/60 text-sm">Your testimonial is in — we&apos;ll review it shortly.</p>
+            <p className="text-muted-foreground text-sm">Your testimonial is in — we&apos;ll review it shortly.</p>
           </div>
-          <div className="badge badge-outline gap-1.5 py-3 px-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-warning inline-block" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 text-xs text-muted-foreground">
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block" />
             Pending review
-          </div>
+          </span>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="card bg-base-200 border border-base-300 animate-slide-up">
-      <div className="card-body">
+    <div className="rounded-2xl bg-card border border-border animate-slide-up">
+      <div className="p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Honeypot */}
           <input name="_hp" type="text" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
@@ -247,90 +251,94 @@ export default function CollectForm({
           {/* Photo + name row */}
           <div className="flex items-center gap-4">
             <div
-              className="w-16 h-16 rounded-full bg-base-300 border-2 border-dashed border-base-content/20 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-base-content/40 transition-all"
+              className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-foreground/30 transition-all"
               onClick={() => fileRef.current?.click()}
             >
               {preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={preview} alt="preview" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-xl">📷</span>
+                <Camera className="w-5 h-5 text-muted-foreground/50" />
               )}
             </div>
             <div className="space-y-1">
-              <button type="button" className="btn btn-outline btn-sm" onClick={() => fileRef.current?.click()}>
+              <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
                 {preview ? "Change photo" : "Add a photo"}
-              </button>
-              <p className="text-xs text-base-content/50">JPG, PNG or WebP · max 2MB</p>
+              </Button>
+              <p className="text-xs text-muted-foreground">JPG, PNG or WebP · max 2MB</p>
             </div>
             <input ref={fileRef} type="file" name="photo" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFile} />
           </div>
 
           {/* Name + role */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="form-control">
-              <label className="label"><span className="label-text">Your name <span className="text-warning">*</span></span></label>
-              <input name="authorName" required placeholder="Jane Doe" className="input input-bordered w-full" />
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Your name <span className="text-yellow-500">*</span></label>
+              <Input name="authorName" required placeholder="Jane Doe" />
             </div>
-            <div className="form-control">
-              <label className="label"><span className="label-text">Role / Company</span></label>
-              <input name="role" placeholder="CEO at Acme" className="input input-bordered w-full" />
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Role / Company</label>
+              <Input name="role" placeholder="CEO at Acme" />
             </div>
           </div>
 
           {/* Written testimonial */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Your thoughts <span className="text-warning">*</span></span>
-              <span className="label-text-alt">{text.length} / 500</span>
-            </label>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Your thoughts <span className="text-yellow-500">*</span></label>
+              <span className="text-xs text-muted-foreground">{text.length} / 500</span>
+            </div>
             <textarea
               name="text"
               required
               maxLength={500}
               rows={4}
               placeholder="Tell us about your experience — the good stuff, the aha moments…"
-              className="textarea textarea-bordered w-full"
+              className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring resize-none"
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
           </div>
 
           {/* Star rating */}
-          <div className="form-control">
-            <label className="label"><span className="label-text">How would you rate it?</span></label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">How would you rate it?</label>
             <StarPicker value={rating} onChange={setRating} color={brandColor} />
           </div>
 
           {/* Video — optional */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Add a video <span className="text-base-content/40 font-normal">(optional)</span></span>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">
+              Add a video <span className="text-muted-foreground font-normal">(optional)</span>
             </label>
-            <div className="rounded-xl border border-base-300 bg-base-100 p-4 space-y-3">
+            <div className="rounded-xl border border-border bg-background p-4 space-y-3">
               <VideoRecorder
                 onVideo={(file) => setVideoFile(file)}
                 onClear={() => setVideoFile(null)}
               />
               {!videoFile && (
                 <>
-                  <div className="divider my-1 text-xs text-base-content/40">or upload a file</div>
+                  <div className="flex items-center gap-3 my-1">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground">or upload a file</span>
+                    <Separator className="flex-1" />
+                  </div>
                   <input
                     type="file"
                     accept="video/mp4,video/webm,video/mov"
-                    className="file-input file-input-bordered file-input-sm w-full"
+                    className="w-full text-xs text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border file:border-border file:text-xs file:font-medium file:bg-muted file:text-foreground hover:file:bg-muted/80 cursor-pointer"
                     onChange={handleVideoUpload}
                   />
-                  <p className="text-xs text-base-content/40">MP4, WebM or MOV · max 200MB · up to 2 min</p>
+                  <p className="text-xs text-muted-foreground">MP4, WebM or MOV · max 200MB · up to 2 min</p>
                 </>
               )}
               {videoFile && (
                 <div className="flex items-center gap-2">
-                  <span className="badge badge-success badge-sm gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/40 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                     Video ready
                   </span>
-                  <button type="button" className="btn btn-ghost btn-xs text-error" onClick={() => setVideoFile(null)}>Remove</button>
+                  <Button type="button" variant="ghost" size="sm" className="h-7 text-xs text-destructive hover:text-destructive" onClick={() => setVideoFile(null)}>Remove</Button>
                 </div>
               )}
             </div>
@@ -338,32 +346,33 @@ export default function CollectForm({
 
           {/* Custom questions */}
           {customFields.map((field) => (
-            <div key={field.id} className="form-control">
-              <label className="label">
-                <span className="label-text">
-                  {field.label}
-                  {field.required && <span className="text-warning ml-1">*</span>}
-                </span>
+            <div key={field.id} className="space-y-1.5">
+              <label className="text-sm font-medium">
+                {field.label}
+                {field.required && <span className="text-yellow-500 ml-1">*</span>}
               </label>
-              <input
+              <Input
                 name={`custom_${field.id}`}
                 placeholder={field.placeholder}
                 required={field.required}
-                className="input input-bordered w-full"
               />
             </div>
           ))}
 
-          {error && <div className="alert alert-error py-2 text-sm"><span>{error}</span></div>}
+          {error && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+              {error}
+            </div>
+          )}
 
-          <button
+          <Button
             type="submit"
-            className="btn btn-primary w-full btn-lg"
-            style={{ backgroundColor: brandColor, borderColor: brandColor }}
+            className="w-full h-12 text-base font-medium"
+            style={{ backgroundColor: brandColor, borderColor: brandColor, color: "#fff" }}
             disabled={loading}
           >
-            {loading ? <span className="loading loading-spinner" /> : "Send my testimonial ✦"}
-          </button>
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Send my testimonial"}
+          </Button>
         </form>
       </div>
     </div>

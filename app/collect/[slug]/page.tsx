@@ -13,7 +13,7 @@ export default async function CollectPage({ params }: { params: Promise<{ slug: 
   const customFields = (project.customFields ?? []) as CustomField[]
 
   return (
-    <div className="min-h-screen flex flex-col bg-base-100" data-theme="bumblebee">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Brand header */}
       <div
         className="w-full py-8 px-6 text-center space-y-3"
@@ -26,7 +26,7 @@ export default async function CollectPage({ params }: { params: Promise<{ slug: 
         <h1 className="text-2xl font-bold">
           {project.headline ?? "Share your experience"}
         </h1>
-        <p className="text-base-content/60 text-sm">
+        <p className="text-muted-foreground text-sm">
           {project.description ?? <>Leave a testimonial for <strong>{project.name}</strong></>}
         </p>
       </div>
@@ -34,8 +34,8 @@ export default async function CollectPage({ params }: { params: Promise<{ slug: 
       <div className="flex-1 flex flex-col items-center p-6">
         <div className="w-full max-w-lg space-y-6">
           <CollectForm slug={slug} customFields={customFields} brandColor={brandColor} />
-          <p className="text-center text-xs text-base-content/40">
-            Powered by <a href="/" className="link link-hover">Vouch</a>
+          <p className="text-center text-xs text-muted-foreground">
+            Powered by <a href="/" className="hover:underline">Vouch</a>
           </p>
         </div>
       </div>
