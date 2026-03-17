@@ -9,33 +9,51 @@ export default async function CollectPage({ params }: { params: Promise<{ slug: 
   const project = await prisma.project.findUnique({ where: { slug } })
   if (!project) notFound()
 
-  const brandColor = project.brandColor ?? "#f5a623"
+  const brandColor = project.brandColor ?? undefined
   const customFields = (project.customFields ?? []) as CustomField[]
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-muted/40">
       {/* Brand header */}
       <div
-        className="w-full py-8 px-6 text-center space-y-3"
-        style={{ backgroundColor: brandColor + "22", borderBottom: `2px solid ${brandColor}44` }}
+        className="w-full py-16 px-8 text-center space-y-5"
+        style={{
+          backgroundColor: brandColor ? brandColor + "18" : "var(--color-muted)",
+          borderBottom: `1px solid ${brandColor ? brandColor + "30" : "var(--color-border)"}`,
+        }}
       >
-        {project.logoUrl && (
+        {project.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={project.logoUrl} alt={project.name} className="h-12 object-contain mx-auto" />
+        ) : (
+          <div
+            className="w-12 h-12 rounded-xl mx-auto flex items-center justify-center bg-background border border-border shadow-sm text-base font-bold"
+            style={{ color: brandColor ?? "var(--color-primary)" }}
+          >
+            {project.name.charAt(0).toUpperCase()}.
+          </div>
         )}
-        <h1 className="text-2xl font-bold">
-          {project.headline ?? "Share your experience"}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {project.description ?? <>Leave a testimonial for <strong>{project.name}</strong></>}
-        </p>
+        <div className="space-y-1.5">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {project.headline ?? "Share your experience"}
+          </h1>
+          <p className="text-muted-foreground">
+            {project.description ?? (
+              <>Leave a testimonial for <strong>{project.name}</strong></>
+            )}
+          </p>
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center p-6">
-        <div className="w-full max-w-lg space-y-6">
+      {/* Form area */}
+      <div className="flex-1 flex flex-col items-center px-6 py-14">
+        <div className="w-full max-w-3xl space-y-5">
           <CollectForm slug={slug} customFields={customFields} brandColor={brandColor} />
           <p className="text-center text-xs text-muted-foreground">
-            Powered by <a href="/" className="hover:underline">Vouch</a>
+            Powered by{" "}
+            <a href="/" className="hover:underline">
+              Vouch
+            </a>
           </p>
         </div>
       </div>

@@ -132,4 +132,47 @@
     from { opacity: 0; transform: scale(0.5); }
     to   { opacity: 1; transform: scale(1); }
   }
+
+  /* ─── Onboarding animations ─── */
+  .animate-slide-from-right {
+    animation: slide-from-right 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-radar-pulse {
+    animation: radar-pulse 3.5s ease-in-out infinite;
+  }
+  .animate-card-float {
+    animation: card-float 4s ease-in-out infinite;
+  }
+  .animate-share-pulse {
+    animation: share-pulse 2.8s ease-in-out infinite;
+  }
+  .animate-star-burst {
+    animation: star-burst-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both,
+               star-idle 5s ease-in-out 0.8s infinite;
+  }
+
+  @keyframes slide-from-right {
+    from { opacity: 0; transform: translateX(22px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes radar-pulse {
+    0%, 100% { transform: scale(1);    opacity: 1; }
+    50%       { transform: scale(1.07); opacity: 0.82; }
+  }
+  @keyframes card-float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+  @keyframes share-pulse {
+    0%, 100% { opacity: 0.85; }
+    50%       { opacity: 0.4; }
+  }
+  @keyframes star-burst-in {
+    from { transform: scale(0.25) rotate(-20deg); opacity: 0; }
+    to   { transform: scale(1)    rotate(0deg);   opacity: 1; }
+  }
+  @keyframes star-idle {
+    0%, 100% { transform: rotate(0deg)  scale(1); }
+    50%       { transform: rotate(6deg)  scale(1.04); }
+  }
 }

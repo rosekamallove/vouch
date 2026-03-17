@@ -14,7 +14,7 @@ export default function LandingPage() {
           <Button variant="ghost" size="sm" asChild>
             <Link href="/sign-in">Sign in</Link>
           </Button>
-          <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90" asChild>
+          <Button size="sm" asChild>
             <Link href="/sign-up">Get started free</Link>
           </Button>
         </div>
@@ -37,7 +37,7 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button size="lg" className="text-base px-8 bg-foreground text-background hover:bg-foreground/90" asChild>
+          <Button size="lg" className="text-base px-8" asChild>
             <Link href="/sign-up">Start collecting — it&apos;s free</Link>
           </Button>
           <Button variant="outline" size="lg" className="text-base px-8" asChild>
@@ -99,7 +99,7 @@ export default function LandingPage() {
           <p className="text-muted-foreground text-lg">
             Free to start. No credit card. No widgets. Just an API.
           </p>
-          <Button size="lg" className="text-base px-10 bg-foreground text-background hover:bg-foreground/90" asChild>
+          <Button size="lg" className="text-base px-10" asChild>
             <Link href="/sign-up">Get started — it&apos;s free</Link>
           </Button>
         </div>

@@ -54,7 +54,7 @@ export default function SignInPage() {
               {error}
             </div>
           )}
-          <Button className="w-full bg-foreground text-background hover:bg-foreground/90" type="submit" disabled={loading}>
+          <Button className="w-full" type="submit" disabled={loading}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
           </Button>
         </form>

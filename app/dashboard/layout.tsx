@@ -8,6 +8,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth()
   if (!session?.user?.id) redirect("/sign-in")
 
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { onboardingStep: true },
+  })
+  if ((user?.onboardingStep ?? 0) < 4) redirect("/onboarding")
+
   const projects = await prisma.project.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
