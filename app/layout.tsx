@@ -3,6 +3,7 @@ import { Geist } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "sonner"
 import { Providers } from "@/components/providers"
+import { Analytics } from "@vercel/analytics/next"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {children}
           <Toaster richColors position="top-right" />
+          <Analytics />
         </Providers>
       </body>
     </html>
